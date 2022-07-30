@@ -1,19 +1,9 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button } from 'react-bootstrap';
-import Enemy from '../classes/Enemy';
+import EnemiesScene from '../classes/EnemiesScene';
 import Game from '../classes/Game';
 import Hero from '../classes/Hero';
 import React from 'react';
-
-class EnemiesScene extends React.Component {
-    render() {
-        return  <div className="row">
-                    <Enemy />
-                    <Enemy />
-                    <Enemy />
-                </div>
-    }
-}
 
 function HeroPanel() {
     return      <div className="row">
@@ -44,16 +34,29 @@ function ItemInventory(props) {
 class Scene extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {game: new Game({
-            maxEnemies: 4,
-            enemies: props.data.enemies
-        })};
+        
+        this.state = {
+            game: new Game({
+                maxEnemies: 4,
+                enemies: props.data.enemies
+            }),
+            seconds: 0
+        };
+
+        var me = this;
+        this.interval = setInterval(function () {
+            me.tick();
+        }, 1000);
+    }
+
+    tick() {
+        this.setState({ seconds: this.state.seconds + 1 });
     }
 
     render() {
         return  <div className="container" style={{height: '100vh'}}>
                 <div className="row h-75">
-                    <div className="col-12">Scene {this.state.game.state.totalEnemies} - {this.state.game.props.maxEnemies}</div>
+                    <div className="col-12">Scene {this.state.seconds} seconds - {this.state.game.state.totalEnemies} - {this.state.game.props.maxEnemies}</div>
                 </div>
                 <div className="row h-25">
                     <div className="col-4"><HeroPanel /></div>
@@ -62,6 +65,8 @@ class Scene extends React.Component {
             </div>
     }
 }
+
+
 
 export async function getServerSideProps() {
     // Fetch data from external API
