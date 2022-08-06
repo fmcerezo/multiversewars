@@ -1,3 +1,4 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
 import Game from '../classes/Game';
 
 export async function getServerSideProps() {
