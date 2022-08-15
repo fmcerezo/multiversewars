@@ -1,4 +1,6 @@
 import heroImg from '../pages/img/zombi.jpg';
+import GameController from '../controllers/GameController';
+import PushStart from './PushStart';
 import Scene from './Scene';
 import React from 'react';
 
@@ -11,73 +13,114 @@ class Game extends React.Component {
             clicks: 0,
             enemies: [],
             maxEnemies: 3,
-            points: 10,
+            points: GameController.getInitialPoints(),
+            startButtonClik: false,
             screen: 1,
-            seconds: 0
+            seconds: 0,
+            x: 500,
+            y: 200
         };
         
         this.handleClick = this.handleClick.bind(this);
-
-        var me = this;
-        this.interval = setInterval(function () {
-            me.calculateEnemies();
-        }, 1000);
+        this.handleStartClick = this.handleStartClick.bind(this);
+        this.refScene = React.createRef();
     }
 
-    calculateEnemies() {
-        let newState = { seconds: this.state.seconds + 1 };
+    componentDidMount() {
+        this.gameController = new GameController(this);
+    }
 
-        const totalNewEnemies = 0 == this.state.seconds
-            ? this.state.maxEnemies
-            : this.state.maxEnemies - this.state.enemies.length;
-
-        if (0 < totalNewEnemies && this.state.maxEnemies > this.state.enemies.length) {
-            let newEnemies = this.state.enemies;
-
-            for (let i = 0; i < totalNewEnemies; i++) {
-                const posAddedEnemy = Math.floor(Math.random() * this.props.data.enemies.length);
-
-                newEnemies.push({
-                    name: this.props.data.enemies[posAddedEnemy]["name"],
-                    points: this.props.data.enemies[posAddedEnemy]["points"] * (parseInt(this.state.clicks/2)+1) + this.state.points - 10
-                });
-            }
-            
-            const newState = { 
-                enemies: newEnemies,
-                seconds: this.state.seconds + 1
-            };
-        }
-
-        this.setState(newState);
+    componentWillUnmount() {
+        document.removeEventListener('keydown', this.keyDownBind);
+        document.removeEventListener('keyup', this.keyUpBind);
+        this.setState({ backColor: 'red' });
+        clearInterval(this.interval);
     }
 
     handleClick(selectedEnemy) {
-        if (selectedEnemy.points <= this.state.points) {
-            let enemies = this.state.enemies;
-            enemies.splice(selectedEnemy.id, 1);
+        const fightResult = this.gameController.fight(selectedEnemy);
 
+        if (fightResult.win) {
             this.setState({
                 clicks: this.state.clicks + 1,
-                enemies: enemies,
-                points: this.state.points + parseInt(selectedEnemy.points / 2)
+                enemies: fightResult.enemies,
+                points: fightResult.points
             });
         } else {
-            this.setState({ backColor: 'red' });
-            clearInterval(this.interval);
+            this.componentWillUnmount();
+        }
+    }
+
+    handleKeyDown(e) {
+        this.setState({ enemies: this.gameController.move(e.keyCode, true) });
+    }
+
+    handleKeyUp(e) {
+        this.setState({ enemies: this.gameController.move(e.keyCode, false) });
+    }
+
+    handleStartClick() {
+        this.keyDownBind = this.handleKeyDown.bind(this);
+        document.addEventListener('keydown', this.keyDownBind);
+        
+        this.keyUpBind = this.handleKeyUp.bind(this);
+        document.addEventListener('keyup', this.keyUpBind);
+
+        let enemies;
+        do {
+            enemies = [];
+            enemies = this.gameController.calculateEnemies(enemies, this.state.maxEnemies);
+        } while (!this.gameController.checkStartingEnemies(enemies));
+        
+        this.setState({
+            enemies: enemies,
+            startButtonClik: true
+        });
+
+        var me = this;
+        this.interval = setInterval(function () {
+            me.refresh();
+        }, 200);
+    }
+
+    refresh() {
+        this.setState({ enemies: this.gameController.updateEnemiesPosition() });
+        
+        if (this.gameController.collision()) {
+            this.componentWillUnmount();
+        } else {
+            let newState = { seconds: this.state.seconds + 1 };
+
+            const totalNewEnemies = this.gameController.calculateTotalNewEnemies();
+
+            if (0 < totalNewEnemies) {
+                newState = { 
+                    enemies: this.gameController.calculateEnemies(this.state.enemies, totalNewEnemies),
+                    seconds: this.state.seconds + 1
+                };
+            }
+
+            this.setState(newState);
         }
     }
 
     render() {
-        return  <Scene 
-                    backColor={this.state.backColor}
-                    heroImg={heroImg}
-                    points={this.state.points} 
-                    seconds={this.state.seconds} 
-                    enemies={this.state.enemies}
-                    clicks={this.state.clicks}
-                    onClick={this.handleClick}
-                />
+        return      <Scene 
+                        ref={this.refScene}
+                        backColor={this.state.backColor}
+                        heroImg={heroImg}
+                        points={this.state.points} 
+                        seconds={this.state.seconds} 
+                        enemies={this.state.enemies}
+                        clicks={this.state.clicks}
+                        onClick={this.state.backColor == 'transparent' ? this.handleClick : null}
+                        x={this.state.x}
+                        y={this.state.y}
+                        startScreen={<PushStart
+                            show={!this.state.startButtonClik}
+                            onClick={this.handleStartClick}
+                        />}
+                    />
     }
 }
 

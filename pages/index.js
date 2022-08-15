@@ -7,8 +7,8 @@ export async function getServerSideProps() {
     const data = await res.json()*/
     const data = {
         enemies: [
-            { name: "vampire", points: 8},
-            { name: "demon", points: 15},
+            { name: "vampire", points: 1},
+            { name: "demon", points: 2},
         ]    
     };
   
