@@ -1,6 +1,5 @@
 export default function handler(req, res) {
     const { method } = req;
-    const { character } = req.query;
 
     var MongoClient = require('mongodb').MongoClient;
     var url = 'mongodb://localhost:27017';
@@ -9,22 +8,22 @@ export default function handler(req, res) {
       case "GET":
         MongoClient.connect(url, function(err, db) {
           var dbo = db.db("multiversewars");
-          dbo.collection("characters").find({ character }).toArray(function(err, result) {
+          dbo.collection("characters").find({ "name": req.query.character }).toArray(function(err, result) {
             if (err) throw err;
             console.clear();
             console.log(result);
             db.close();
+            
+            res.status(200).json({ message: "GET", result });
           });
         });
-
-        res.status(200).json({ message: "GET", character });
         break;
 
       case "POST":
         MongoClient.connect(url, async function(err, db) {
           var dbo = db.db('multiversewars');
           console.clear();
-          await dbo.collection('characters').insertOne({ character });
+          await dbo.collection('characters').insertOne(req.body);
           db.close();
         });
 
@@ -35,7 +34,7 @@ export default function handler(req, res) {
         MongoClient.connect(url, async function(err, db) {
           var dbo = db.db('multiversewars');
           console.clear();
-          await dbo.collection('characters').deleteMany({ character });
+          await dbo.collection('characters').deleteMany({ "name": req.query.character });
           db.close();
         });
 
