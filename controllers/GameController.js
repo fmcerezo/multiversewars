@@ -33,7 +33,7 @@ class GameController {
 
         let newEnemies = [];
         for (let i = 0; i < totalEnemiesToAdd; i++) {
-            const posAddedEnemyType = Math.floor(Math.random() * this.game.props.data.enemies.length);
+            const posAddedEnemyType = Math.floor(Math.random() * this.game.props.characters.length);
             
             let newEnemySize = this.getRandomEnemyPos(limits, sceneWidth, sceneHeight);
             while (this.collisionCharacter(newEnemySize) || this.collisionNewEnemy(newEnemySize, newEnemies)) {
@@ -41,8 +41,8 @@ class GameController {
             }
             newEnemies.push(newEnemySize);
             enemies.push({
-                name: this.game.props.data.enemies[posAddedEnemyType]["name"],
-                points: this.game.props.data.enemies[posAddedEnemyType]["points"] 
+                name: this.game.props.characters[posAddedEnemyType]["name"],
+                points: this.game.props.characters[posAddedEnemyType]["points"] 
                     * (parseInt(this.game.state.clicks/2)+1) + this.game.state.points - GameController.getInitialPoints(),
                 ref: React.createRef(),
                 x: newEnemySize.left,
