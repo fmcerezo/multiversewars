@@ -11,9 +11,13 @@ class Data {
         this.client.close();
     }
 
-    async findAll() {
+    async findAll(query) {
+        let sorting = {};
+        if (query.sortField && query.sortType) {
+            sorting[query.sortField] = 'desc' === query.sortType ? -1 : 1;
+        }
         const col = await this.getCollection();
-        const result = await col.find().toArray();
+        const result = await col.find().sort(sorting).toArray();
         this.client.close();
         return result;
     }
@@ -33,12 +37,12 @@ class Data {
 export default async function handler(req, res) {
     const { method } = req;
     const arrayUrl = req.url.split("/");
-    const collectionName = arrayUrl.splice(-1)[0];
+    const collectionName = arrayUrl.splice(-1)[0].split("?")[0];
     const data = new Data(collectionName);
 
     switch (method) {
         case "GET":
-            const results = await data.findAll();
+            const results = await data.findAll(req.query);
             let json = {};
             json[collectionName] = results;
             res.status(200).json(json);

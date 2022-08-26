@@ -10,12 +10,6 @@ class GameController {
 
     constructor(game) {
         this.game = game;
-        this.keys = {
-            up: false,
-            down: false,
-            left: false,
-            right: false
-        };
     }
 
     calculateEnemies(enemies, totalEnemiesToAdd) {
@@ -55,16 +49,6 @@ class GameController {
 
     calculateTotalNewEnemies() {
         return this.game.state.maxEnemies - this.game.state.enemies.length;
-    }
-
-    checkStartingEnemies(enemies) {
-        for (let i = 0; i < enemies.length; i++) {
-            if (enemies[i].points <= this.game.state.points) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     collision() {
@@ -184,6 +168,23 @@ class GameController {
         }
 
         return enemies;
+    }
+
+    readyToStart(enemies) {
+        this.keys = {
+            up: false,
+            down: false,
+            left: false,
+            right: false
+        };
+
+        for (let i = 0; i < enemies.length; i++) {
+            if (enemies[i].points <= this.game.state.points) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     updateEnemiesPosition() {

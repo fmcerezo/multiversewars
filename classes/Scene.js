@@ -20,6 +20,7 @@ class Scene extends React.Component {
                     position: 'relative'
                 }}>
                     {this.props.startScreen}
+                    {this.props.registerScreen}
                     <div className="col-12" ref={this.state.ref}>
                         Scene {this.props.seconds} seconds - {this.props.clicks} Game clicks - X: {this.props.x} Y: {this.props.y}
                         {this.props.enemies.map((item, index) => <Avatar

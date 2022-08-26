@@ -3,6 +3,7 @@ import GameController from '../controllers/GameController';
 import PushStart from './PushStart';
 import Scene from './Scene';
 import React from 'react';
+import RegisterScreen from './RegisterScreen';
 
 class Game extends React.Component {
     constructor(props) {
@@ -14,7 +15,8 @@ class Game extends React.Component {
             enemies: [],
             maxEnemies: 3,
             points: GameController.getInitialPoints(),
-            startButtonClik: false,
+            showRegisterScreen: false,
+            startButtonClik: false,            
             screen: 1,
             seconds: 0,
             x: 500,
@@ -33,7 +35,10 @@ class Game extends React.Component {
     componentWillUnmount() {
         document.removeEventListener('keydown', this.keyDownBind);
         document.removeEventListener('keyup', this.keyUpBind);
-        this.setState({ backColor: 'red' });
+        this.setState({ 
+            backColor: 'red',
+            showRegisterScreen: true
+        });
         clearInterval(this.interval);
     }
 
@@ -66,21 +71,32 @@ class Game extends React.Component {
         this.keyUpBind = this.handleKeyUp.bind(this);
         document.addEventListener('keyup', this.keyUpBind);
 
-        let enemies;
-        do {
-            enemies = [];
-            enemies = this.gameController.calculateEnemies(enemies, this.state.maxEnemies);
-        } while (!this.gameController.checkStartingEnemies(enemies));
-        
         this.setState({
-            enemies: enemies,
-            startButtonClik: true
+            backColor: 'transparent',
+            clicks: 0,
+            enemies: [],
+            maxEnemies: 3,
+            points: GameController.getInitialPoints(),
+            showRegisterScreen: false,
+            startButtonClik: true,            
+            screen: 1,
+            seconds: 0
+        }, () => {
+            let enemies;
+            do {
+                enemies = [];
+                enemies = this.gameController.calculateEnemies(enemies, this.state.maxEnemies);
+            } while (!this.gameController.readyToStart(enemies));
+            
+            this.setState({
+                enemies: enemies,
+            });
+    
+            var me = this;
+            this.interval = setInterval(function () {
+                me.refresh();
+            }, 200);
         });
-
-        var me = this;
-        this.interval = setInterval(function () {
-            me.refresh();
-        }, 200);
     }
 
     refresh() {
@@ -119,6 +135,11 @@ class Game extends React.Component {
                         startScreen={<PushStart
                             show={!this.state.startButtonClik}
                             onClick={this.handleStartClick}
+                        />}
+                        registerScreen={<RegisterScreen
+                            onClick={this.handleStartClick}
+                            points={this.state.points}
+                            show={this.state.showRegisterScreen}
                         />}
                     />
     }

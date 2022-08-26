@@ -1,4 +1,5 @@
 import { Button } from 'react-bootstrap';
+import Card from 'react-bootstrap/Card';
 
 function PushStart(props) {
     if (props.show) {
@@ -14,6 +15,8 @@ function PushStart(props) {
                             onClick={props.onClick}
                         >Start
                         </Button>
+
+                        <p className='mt-5'><Card.Link href="/records">Records</Card.Link></p>
                     </div>
                 </div>
     }
