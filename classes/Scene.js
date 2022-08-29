@@ -17,7 +17,8 @@ class Scene extends React.Component {
         return  <div className="container" style={{height: '100vh'}}>
                 <div className="row h-75" style={{
                     border: '1px solid black',
-                    position: 'relative'
+                    position: 'relative',
+                    overflow: 'hidden'
                 }}>
                     {this.props.startScreen}
                     {this.props.registerScreen}

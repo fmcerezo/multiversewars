@@ -29,6 +29,7 @@ class Game extends React.Component {
     }
 
     componentDidMount() {
+        document.title = "Multiverse wars";
         this.gameController = new GameController(this);
     }
 
