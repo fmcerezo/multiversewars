@@ -1,8 +1,11 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Card from 'react-bootstrap/Card';
+import { useEffect } from "react";
 
-export default function RecordsScreen(props) {
-    document.title = "Multiverse wars - Records";
+export default function RecordsScreen(props) {    
+    useEffect(() => {
+        document.title = "Multiverse wars - Records";
+    }, []);
 
     return  <div className="container" style={{
                 height: '100vh'
@@ -24,7 +27,7 @@ export default function RecordsScreen(props) {
 
 export async function getServerSideProps() {
     // Fetch data from external API
-    const res = await fetch("process.env.API_URL/api/v1/records?sortField=points&sortType=desc");
+    const res = await fetch(process.env.API_URL + "/api/v1/records?sortField=points&sortType=desc");
     const data = await res.json();
   
     // Pass data to the page via props

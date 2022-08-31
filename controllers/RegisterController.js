@@ -7,7 +7,7 @@ export default async function RegisterController(event) {
   };
 
   const JSONdata = JSON.stringify(data);
-  const endpoint = 'process.env.API_URL/api/v1/records';
+  const endpoint = process.env.API_URL + "/api/v1/records";
   const options = {    
     method: 'POST',
     headers: {
