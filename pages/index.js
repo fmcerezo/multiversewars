@@ -7,7 +7,7 @@ export async function getServerSideProps() {
     const data = await res.json();
   
     // Pass data to the page via props
-    return { props: data };
+    return { props: { characters: data.characters.result } };
 }
 
 export default Game;

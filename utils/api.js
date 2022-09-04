@@ -12,14 +12,38 @@ class Data {
     }
 
     async findAll(query) {
+        let page = 1;
+        if (query.page && parseInt(query.page) > 0) {
+            page = parseInt(query.page);
+        }
+
+        let perPage = 20;
+        if (query.perPage && parseInt(query.perPage) > 0) {
+            perPage = parseInt(query.perPage);
+        }
+
         let sorting = {};
         if (query.sortField && query.sortType) {
             sorting[query.sortField] = 'desc' === query.sortType ? -1 : 1;
         }
+
+        const skip = (page - 1) * perPage;
+
         const col = await this.getCollection();
-        const result = await col.find().sort(sorting).toArray();
+        const totalCount = await col.countDocuments();
+        const result = await col.find().sort(sorting).skip(skip).limit(perPage).toArray();
+        const pageCount = result.length;
         this.client.close();
-        return result;
+        return {
+            meta: {
+              success: true,
+              totalCount: totalCount,
+              pageCount: Math.ceil(totalCount/perPage),
+              currentPage: page,
+              perPage: perPage,
+            },
+            result: result
+          };
     }
 
     async getCollection() {
