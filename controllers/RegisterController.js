@@ -1,4 +1,4 @@
-export default async function RegisterController(event) {
+export default async function registerSubmit(event) {
   event.preventDefault();
 
   const data = {
@@ -18,6 +18,5 @@ export default async function RegisterController(event) {
 
   const response = await fetch(endpoint, options);
 
-  const result = await response.json();
-  alert(`Is this your full name: ${result.message}`);
+  return response.status;
 }
