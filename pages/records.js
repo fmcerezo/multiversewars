@@ -23,8 +23,6 @@ export default function RecordsScreen() {
     }
 
     if (records != null) {
-        const firstRecordPos = (page - 1) * process.env.LIST_RECORDS_PER_PAGE;
-
         return  <div className="container" style={{
                     height: '100vh'
                 }}>
@@ -34,32 +32,55 @@ export default function RecordsScreen() {
                         border: '10px solid black'
                     }}>
                             <h1 className="text-center">Records</h1>
-                            <ol className="px-5 mx-5">
-
-                            {records.records.result.map((record, index) => <li type="none" key={index + record.name}>{firstRecordPos + index + 1} {record.name} - {record.points}</li>)}
-                            </ol>
-                            <ReactPaginate
-                                containerClassName={'pagination justify-content-center'}
-                                activeClassName={'active'}
-                                previousLabel='&laquo;'
-                                nextLabel='&raquo;'
-                                breakLabel={'...'}
-                                breakLinkClassName={'page-link'}
-                                pageLinkClassName={'page-link'}
-                                previousClassName={'page-item'}
-                                previousLinkClassName={'page-link'}
-                                nextClassName={'page-item'}
-                                nextLinkClassName={'page-link'}
-
-                                initialPage={records.records.meta.currentPage - 1}
-                                pageCount={records.records.meta.pageCount}
-                                marginPagesDisplayed={3}
-                                pageRangeDisplayed={2}
-                                onPageChange={pageChangeHandler}
+                            <Records
+                                meta={records.records.meta}
+                                result={records.records.result}
+                                page={page}
+                                pageChangeHandler={pageChangeHandler}
                             />
                             <p className="mt-5 text-center"><Card.Link href="/">Play game</Card.Link></p>
                         </div>
                     </div>
                 </div>
+    }
+}
+
+function Records(props) {
+    if (props.meta.totalCount > 0) {
+        const firstRecordPos = (props.page - 1) * process.env.LIST_RECORDS_PER_PAGE;
+        const showPagination = props.meta.totalCount > props.meta.perPage;
+
+        return  <div>
+                    <ol className="px-5 mx-5 my-5">
+                        {props.result.map((record, index) =><li 
+                                                                type="none" 
+                                                                key={index + record.name}>
+                                                                {firstRecordPos + index + 1} 
+                                                                &nbsp;{record.name} - {record.points}
+                                                            </li>)}
+                    </ol>
+                    {showPagination ? 
+                    <ReactPaginate
+                        containerClassName={'pagination justify-content-center'}
+                        activeClassName={'active'}
+                        previousLabel='&laquo;'
+                        nextLabel='&raquo;'
+                        breakLabel={'...'}
+                        breakLinkClassName={'page-link'}
+                        pageLinkClassName={'page-link'}
+                        previousClassName={'page-item'}
+                        previousLinkClassName={'page-link'}
+                        nextClassName={'page-item'}
+                        nextLinkClassName={'page-link'}
+
+                        initialPage={props.meta.currentPage - 1}
+                        pageCount={props.meta.pageCount}
+                        marginPagesDisplayed={3}
+                        pageRangeDisplayed={2}
+                        onPageChange={props.pageChangeHandler}
+                    /> : ''}
+                </div>;
+    } else {
+        return  <div className="my-5 text-center">No records yet. Be the first one!</div>;
     }
 }
