@@ -1,3 +1,4 @@
+import CollissionHelper from '../helpers/CollisionHelper';
 import React from 'react';
 
 const enemyDistance = 1;
@@ -30,7 +31,8 @@ class GameController {
             const posAddedEnemyType = Math.floor(Math.random() * this.game.props.characters.length);
             
             let newEnemySize = this.getRandomEnemyPos(limits, sceneWidth, sceneHeight);
-            while (this.collisionCharacter(newEnemySize) || this.collisionNewEnemy(newEnemySize, newEnemies)) {
+            while (CollissionHelper.collision(this.game.state.enemies, newEnemySize) 
+            || CollissionHelper.collisionNewEnemy(newEnemySize, newEnemies)) {
                 newEnemySize = this.getRandomEnemyPos(limits, sceneWidth, sceneHeight);
             }
             newEnemies.push(newEnemySize);
@@ -59,46 +61,7 @@ class GameController {
             right: this.game.state.x + this.game.refScene.current.state.refPlayer.current.state.width
         };
 
-        return this.collisionCharacter(hero);
-    }
-
-    collisionCharacter(character) {
-        for (let i = 0; i < this.game.state.enemies.length; i++) {
-            const enemy = {
-                top: this.game.state.enemies[i].y,
-                bottom: this.game.state.enemies[i].y + this.game.state.enemies[i].ref.current.state.height,
-                left: this.game.state.enemies[i].x,
-                right: this.game.state.enemies[i].x + this.game.state.enemies[i].ref.current.state.width
-            };
-
-            const collision = (character.left >= enemy.left && character.left <= enemy.right
-                || character.right >= enemy.left && character.right <= enemy.right)
-                &&
-                (character.top >= enemy.top && character.top <= enemy.bottom
-                || character.bottom >= enemy.top && character.bottom <= enemy.bottom);
-            
-            if (collision) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    collisionNewEnemy(newEnemySize, newEnemies) {
-        for (let i = 0; i < newEnemies.length; i++) {
-            const collision = (newEnemySize.left >= newEnemies[i].left && newEnemySize.left <= newEnemies[i].right
-                || newEnemySize.right >= newEnemies[i].left && newEnemySize.right <= newEnemies[i].right)
-                &&
-                (newEnemySize.top >= newEnemies[i].top && newEnemySize.top <= newEnemies[i].bottom
-                || newEnemySize.bottom >= newEnemies[i].top && newEnemySize.bottom <= newEnemies[i].bottom);
-            
-            if (collision) {
-                return true;
-            }
-        }
-
-        return false;
+        return CollissionHelper.collision(this.game.state.enemies, hero);
     }
 
     fight(selectedEnemy) {
