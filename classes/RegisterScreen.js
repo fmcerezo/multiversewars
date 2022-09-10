@@ -16,7 +16,14 @@ export default function RegisterScreen(props) {
         setSubmitResponse(responseStatus);
     };
 
-    useEffect(() => {}, [submitResponse]);
+    useEffect(() => {
+        if (props.show) {
+            const input = document.getElementById("name");
+            if (null != input) {
+                input.focus();
+            }
+        }
+    }, [submitResponse, props.show]);
 
     if (props.show) {
         return  <div className="h-100 col-6 offset-3 rounded position-absolute d-flex justify-content-center align-items-center" style={{
