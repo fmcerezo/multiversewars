@@ -1,7 +1,7 @@
-import registerSubmit from "../controllers/RegisterController";
 import { Button } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
 import Card from 'react-bootstrap/Card';
+import RegisterController from "../controllers/RegisterController";
 
 export default function RegisterScreen(props) {
     const [submitResponse, setSubmitResponse] = useState(0);
@@ -12,7 +12,7 @@ export default function RegisterScreen(props) {
     };
 
     const submit = async (event) => {
-        const responseStatus = await registerSubmit(event);
+        const responseStatus = await RegisterController.save(event);
         setSubmitResponse(responseStatus);
     };
 

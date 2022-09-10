@@ -1,7 +1,8 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useState, useEffect } from 'react';
 import Card from 'react-bootstrap/Card';
-import React, { useState, useEffect } from 'react';
 import ReactPaginate from 'react-paginate';
+import RegisterController from "../controllers/RegisterController";
 
 export default function RecordsScreen() {
     const [page, setPage] = useState(1);
@@ -17,8 +18,7 @@ export default function RecordsScreen() {
     };
 
     async function fetchRecords(page) {
-        const res = await fetch(process.env.API_URL + `/api/v1/records?sortField=points&sortType=desc&page=${page}&perPage=${process.env.LIST_RECORDS_PER_PAGE}`);
-        const data = await res.json();
+        const data = await RegisterController.fetch(page);
         setRecords(data);
     }
 
