@@ -9,19 +9,7 @@ class Game extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            backColor: 'transparent',
-            clicks: 0,
-            enemies: [],
-            maxEnemies: 3,
-            points: GameController.getInitialPoints(),
-            showRegisterScreen: false,
-            startButtonClik: false,            
-            screen: 1,
-            seconds: 0,
-            x: 500,
-            y: 200
-        };
+        this.state = GameController.getGameParams(true);
         
         this.handleClick = this.handleClick.bind(this);
         this.handleStartClick = this.handleStartClick.bind(this);
@@ -72,32 +60,27 @@ class Game extends React.Component {
         this.keyUpBind = this.handleKeyUp.bind(this);
         document.addEventListener('keyup', this.keyUpBind);
 
-        this.setState({
-            backColor: 'transparent',
-            clicks: 0,
-            enemies: [],
-            maxEnemies: 3,
-            points: GameController.getInitialPoints(),
-            showRegisterScreen: false,
-            startButtonClik: true,            
-            screen: 1,
-            seconds: 0
-        }, () => {
-            let enemies;
-            do {
-                enemies = [];
-                enemies = this.gameController.calculateEnemies(enemies, this.state.maxEnemies);
-            } while (!this.gameController.readyToStart(enemies));
-            
-            this.setState({
-                enemies: enemies,
-            });
-    
-            var me = this;
-            this.interval = setInterval(function () {
-                me.refresh();
-            }, 200);
-        });
+        this.setState(
+            GameController.getGameParams(false),
+            () => {
+                this.gameController.reset();
+
+                let enemies;
+                do {
+                    enemies = [];
+                    enemies = this.gameController.calculateEnemies(enemies);
+                } while (!this.gameController.validateInitialEnemies(enemies));
+                
+                this.setState({
+                    enemies: enemies,
+                });
+        
+                var me = this;
+                this.interval = setInterval(function () {
+                    me.refresh();
+                }, 200);
+            }
+        );
     }
 
     refresh() {
@@ -112,7 +95,7 @@ class Game extends React.Component {
 
             if (0 < totalNewEnemies) {
                 newState = { 
-                    enemies: this.gameController.calculateEnemies(this.state.enemies, totalNewEnemies),
+                    enemies: this.gameController.calculateEnemies(this.state.enemies),
                     seconds: this.state.seconds + 1
                 };
             }
@@ -134,7 +117,7 @@ class Game extends React.Component {
                         x={this.state.x}
                         y={this.state.y}
                         startScreen={<PushStart
-                            show={!this.state.startButtonClik}
+                            show={this.state.showStartScreen}
                             onClick={this.handleStartClick}
                         />}
                         registerScreen={<RegisterScreen

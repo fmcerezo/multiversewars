@@ -1,56 +1,76 @@
 import CollissionHelper from '../helpers/CollisionHelper';
 import React from 'react';
 
-const enemyDistance = 1;
+const initialEnemyDistance = 0;
+const initialMaxEnemies = 3;
+const initialPoints = 1;
 const heroDistance = 1;
 
 class GameController {
-    static getInitialPoints() {
-        return 1;
+    static getGameParams(showStartScreen) {
+        return {
+            backColor: 'transparent',
+            clicks: 0,
+            enemies: [],
+            points: initialPoints,
+            showRegisterScreen: false,
+            showStartScreen: showStartScreen,
+            screen: 1,
+            seconds: 0,
+            x: 500,
+            y: 200
+        };
     }
 
     constructor(game) {
         this.game = game;
+        this.reset();
     }
 
-    calculateEnemies(enemies, totalEnemiesToAdd) {
-        const heightDistance = this.game.refScene.current.state.refPlayer.current.state.height * 3;
-        const widthDistance = this.game.refScene.current.state.refPlayer.current.state.width * 3;
-        const sceneHeight = this.game.refScene.current.state.ref.current.clientHeight;
-        const sceneWidth = this.game.refScene.current.state.ref.current.clientWidth;
+    calculateEnemies(enemies) {
+        const totalEnemiesToAdd = this.calculateTotalNewEnemies();
 
-        const limits = {
-            top: this.game.state.y - heightDistance,
-            bottom: this.game.state.y + this.game.refScene.current.state.refPlayer.current.state.height + heightDistance,
-            left: this.game.state.x - widthDistance,
-            right: this.game.state.x + this.game.refScene.current.state.refPlayer.current.state.width + widthDistance
-        };
+        if (0 < totalEnemiesToAdd) {
+            this.increaseDifficult();
 
-        let newEnemies = [];
-        for (let i = 0; i < totalEnemiesToAdd; i++) {
-            const posAddedEnemyType = Math.floor(Math.random() * this.game.props.characters.length);
+            const heightDistance = this.game.refScene.current.state.refPlayer.current.state.height * 3;
+            const widthDistance = this.game.refScene.current.state.refPlayer.current.state.width * 3;
+            const sceneHeight = this.game.refScene.current.state.ref.current.clientHeight;
+            const sceneWidth = this.game.refScene.current.state.ref.current.clientWidth;
+
+            const limits = {
+                top: this.game.state.y - heightDistance,
+                bottom: this.game.state.y + this.game.refScene.current.state.refPlayer.current.state.height + heightDistance,
+                left: this.game.state.x - widthDistance,
+                right: this.game.state.x + this.game.refScene.current.state.refPlayer.current.state.width + widthDistance
+            };
             
-            let newEnemySize = this.getRandomEnemyPos(limits, sceneWidth, sceneHeight);
-            while (CollissionHelper.collision(this.game.state.enemies, newEnemySize) 
-            || CollissionHelper.collisionNewEnemy(newEnemySize, newEnemies)) {
-                newEnemySize = this.getRandomEnemyPos(limits, sceneWidth, sceneHeight);
+            let newEnemies = [];
+            for (let i = 0; i < totalEnemiesToAdd; i++) {
+                const posAddedEnemyType = Math.floor(Math.random() * this.game.props.characters.length);
+                
+                let newEnemySize = this.getRandomEnemyPos(limits, sceneWidth, sceneHeight);
+                while (CollissionHelper.collision(this.game.state.enemies, newEnemySize) 
+                || CollissionHelper.collisionNewEnemy(newEnemySize, newEnemies)) {
+                    newEnemySize = this.getRandomEnemyPos(limits, sceneWidth, sceneHeight);
+                }
+                newEnemies.push(newEnemySize);
+                enemies.push({
+                    name: this.game.props.characters[posAddedEnemyType]["name"],
+                    points: this.game.props.characters[posAddedEnemyType]["points"] 
+                        * (parseInt(this.game.state.clicks/2)+1) + this.game.state.points - initialPoints,
+                    ref: React.createRef(),
+                    x: newEnemySize.left,
+                    y: newEnemySize.top
+                });
             }
-            newEnemies.push(newEnemySize);
-            enemies.push({
-                name: this.game.props.characters[posAddedEnemyType]["name"],
-                points: this.game.props.characters[posAddedEnemyType]["points"] 
-                    * (parseInt(this.game.state.clicks/2)+1) + this.game.state.points - GameController.getInitialPoints(),
-                ref: React.createRef(),
-                x: newEnemySize.left,
-                y: newEnemySize.top
-            });
         }
 
         return enemies;
     }
 
     calculateTotalNewEnemies() {
-        return this.game.state.maxEnemies - this.game.state.enemies.length;
+        return this.maxEnemies - this.game.state.enemies.length;
     }
 
     collision() {
@@ -78,7 +98,7 @@ class GameController {
             result = {
                 win: true,
                 enemies: enemies,
-                points: this.game.state.points + parseInt(selectedEnemy.points / 2) + GameController.getInitialPoints()
+                points: this.game.state.points + parseInt(selectedEnemy.points / 2) + initialPoints
             };
         }
         
@@ -103,6 +123,15 @@ class GameController {
             left: pos.x,
             right: pos.x + this.game.refScene.current.state.refPlayer.current.state.width
         };
+    }
+
+    increaseDifficult() {
+        if (this.game.state.clicks % 10 === 0) {
+            this.enemyDistance++;
+            if (this.enemyDistance % 2 === 0) {
+                this.maxEnemies++;
+            }
+        }
     }
 
     move(keyCode, pushed) {
@@ -133,14 +162,43 @@ class GameController {
         return enemies;
     }
 
-    readyToStart(enemies) {
+    reset() {
+        this.enemyDistance = initialEnemyDistance;
+        this.maxEnemies = initialMaxEnemies;
         this.keys = {
             up: false,
             down: false,
             left: false,
             right: false
         };
+    }
 
+    updateEnemiesPosition() {
+        let enemies = this.game.state.enemies;
+        for (let i = 0; i < enemies.length; i++) {
+            enemies[i]["x"] = this.game.state.x + this.enemyDistance >= enemies[i]["x"]
+                                    && this.game.state.x - this.enemyDistance <= enemies[i]["x"]
+                                ? this.game.state.x
+                                : this.game.state.x < enemies[i]["x"]
+                                ? enemies[i]["x"] - this.enemyDistance
+                                : enemies[i]["x"] + this.enemyDistance;
+            enemies[i]["y"] = this.game.state.y + this.enemyDistance >= enemies[i]["y"]
+                                    && this.game.state.y - this.enemyDistance <= enemies[i]["y"]
+                                ? this.game.state.y
+                                : this.game.state.y < enemies[i]["y"]
+                                ? enemies[i]["y"] - this.enemyDistance
+                                : enemies[i]["y"] + this.enemyDistance;
+        }
+        
+        return enemies;
+    }
+
+    /**
+     * To use at start game. Check at least one enemy can be defeated by player.
+     * @param {object} enemies
+     * @returns {bool}
+     */
+    validateInitialEnemies(enemies) {
         for (let i = 0; i < enemies.length; i++) {
             if (enemies[i].points <= this.game.state.points) {
                 return true;
@@ -148,24 +206,6 @@ class GameController {
         }
 
         return false;
-    }
-
-    updateEnemiesPosition() {
-        let enemies = this.game.state.enemies;
-        for (let i = 0; i < enemies.length; i++) {
-            enemies[i]["x"] = this.game.state.x === enemies[i]["x"] 
-                                ? enemies[i]["x"]
-                                : this.game.state.x < enemies[i]["x"]
-                                ? enemies[i]["x"] - enemyDistance
-                                : enemies[i]["x"] + enemyDistance;
-            enemies[i]["y"] = this.game.state.y === enemies[i]["y"]
-                                ? enemies[i]["y"]
-                                : this.game.state.y < enemies[i]["y"]
-                                ? enemies[i]["y"] - enemyDistance
-                                : enemies[i]["y"] + enemyDistance;
-        }
-        
-        return enemies;
     }
 }
 
