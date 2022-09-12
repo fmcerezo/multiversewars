@@ -4,6 +4,7 @@ import React from 'react';
 const initialEnemyDistance = 0;
 const initialMaxEnemies = 3;
 const initialPoints = 1;
+const maxEnemyDistance = 6;
 const heroDistance = 1;
 
 class GameController {
@@ -57,8 +58,7 @@ class GameController {
                 newEnemies.push(newEnemySize);
                 enemies.push({
                     name: this.game.props.characters[posAddedEnemyType]["name"],
-                    points: this.game.props.characters[posAddedEnemyType]["points"] 
-                        * (parseInt(this.game.state.clicks/2)+1) + this.game.state.points - initialPoints,
+                    points: parseInt(this.game.props.characters[posAddedEnemyType]["points"] * this.game.state.points),
                     ref: React.createRef(),
                     x: newEnemySize.left,
                     y: newEnemySize.top
@@ -98,7 +98,7 @@ class GameController {
             result = {
                 win: true,
                 enemies: enemies,
-                points: this.game.state.points + parseInt(selectedEnemy.points / 2) + initialPoints
+                points: this.game.state.points + parseInt(selectedEnemy.points / 10) + initialPoints
             };
         }
         
@@ -126,8 +126,12 @@ class GameController {
     }
 
     increaseDifficult() {
-        if (this.game.state.clicks % 10 === 0) {
+        if (maxEnemyDistance >= this.enemyDistance 
+            && (this.lastClickIncreaseDifficult < this.game.state.clicks || 0 === this.game.state.clicks)
+            && this.game.state.clicks % 10 === 0) {
+            this.lastClickIncreaseDifficult = this.game.state.clicks;
             this.enemyDistance++;
+            
             if (this.enemyDistance % 2 === 0) {
                 this.maxEnemies++;
             }
@@ -164,6 +168,7 @@ class GameController {
 
     reset() {
         this.enemyDistance = initialEnemyDistance;
+        this.lastClickIncreaseDifficult = 0;
         this.maxEnemies = initialMaxEnemies;
         this.keys = {
             up: false,
