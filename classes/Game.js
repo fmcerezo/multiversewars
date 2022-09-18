@@ -46,11 +46,11 @@ class Game extends React.Component {
     }
 
     handleKeyDown(e) {
-        this.setState({ enemies: this.gameController.move(e.keyCode, true) });
+        this.setState(this.gameController.move(e.keyCode, true));
     }
 
     handleKeyUp(e) {
-        this.setState({ enemies: this.gameController.move(e.keyCode, false) });
+        this.setState(this.gameController.move(e.keyCode, false));
     }
 
     handleStartClick() {
@@ -69,7 +69,7 @@ class Game extends React.Component {
                 do {
                     enemies = [];
                     enemies = this.gameController.calculateEnemies(enemies);
-                } while (!this.gameController.validateInitialEnemies(enemies));
+                } while (!this.gameController.validateEnemies(enemies));
                 
                 this.setState({
                     enemies: enemies,
@@ -84,9 +84,17 @@ class Game extends React.Component {
     }
 
     refresh() {
+        const gifts = this.gameController.getGifts();
+        if (0 < gifts.length) {
+            this.setState({ gifts: gifts });
+        }
         this.setState({ enemies: this.gameController.updateEnemiesPosition() });
+        const collectedGift = this.gameController.collisionGift();
+        if (collectedGift != false && collectedGift.collected) {
+            this.setState(collectedGift.data);
+        }
         
-        if (this.gameController.collision()) {
+        if (this.gameController.collision() !== false) {
             this.componentWillUnmount();
         } else {
             let newState = { seconds: this.state.seconds + 1 };
@@ -112,6 +120,7 @@ class Game extends React.Component {
                         points={this.state.points} 
                         seconds={this.state.seconds} 
                         enemies={this.state.enemies}
+                        gifts={this.state.gifts}
                         clicks={this.state.clicks}
                         onClick={this.state.backColor == 'transparent' ? this.handleClick : null}
                         x={this.state.x}

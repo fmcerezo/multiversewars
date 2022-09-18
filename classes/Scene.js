@@ -1,5 +1,6 @@
 import Avatar from './Avatar';
 import EnemiesScene from './EnemiesScene';
+import Gift from './Gift';
 import HeroPanel from './HeroPanel';
 import React from 'react';
 
@@ -33,6 +34,15 @@ class Scene extends React.Component {
                                                             handleClick={this.props.onClick}
                                                             x={item.x}
                                                             y={item.y}
+                                                        />)}
+                        {this.props.gifts.map((gift, index) => <Gift
+                                                            key={index}
+                                                            id={index}
+                                                            type={gift.type}
+                                                            points={gift.points}
+                                                            ref={gift.ref}
+                                                            x={gift.x}
+                                                            y={gift.y}
                                                         />)}
                         <Avatar
                             ref={this.state.refPlayer}

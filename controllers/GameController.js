@@ -1,4 +1,7 @@
 import CollissionHelper from '../helpers/CollisionHelper';
+import EnemiesValidatorHelper from '../helpers/EnemiesValidatorHelper';
+import PositionHelper from '../helpers/PositionHelper';
+import GiftController from './GiftController';
 import React from 'react';
 
 const initialEnemyDistance = 0;
@@ -13,6 +16,7 @@ class GameController {
             backColor: 'transparent',
             clicks: 0,
             enemies: [],
+            gifts: [],
             points: initialPoints,
             showRegisterScreen: false,
             showStartScreen: showStartScreen,
@@ -36,32 +40,34 @@ class GameController {
 
             const heightDistance = this.game.refScene.current.state.refPlayer.current.state.height * 3;
             const widthDistance = this.game.refScene.current.state.refPlayer.current.state.width * 3;
-            const sceneHeight = this.game.refScene.current.state.ref.current.clientHeight;
-            const sceneWidth = this.game.refScene.current.state.ref.current.clientWidth;
 
-            const limits = {
-                top: this.game.state.y - heightDistance,
-                bottom: this.game.state.y + this.game.refScene.current.state.refPlayer.current.state.height + heightDistance,
-                left: this.game.state.x - widthDistance,
-                right: this.game.state.x + this.game.refScene.current.state.refPlayer.current.state.width + widthDistance
-            };
+            const hero = PositionHelper.get(this.game.state, this.game.refScene.current.state.refPlayer.current.state);
+            const limits = PositionHelper.getExtended(hero, widthDistance, heightDistance);
             
             let newEnemies = [];
             for (let i = 0; i < totalEnemiesToAdd; i++) {
                 const posAddedEnemyType = Math.floor(Math.random() * this.game.props.characters.length);
                 
-                let newEnemySize = this.getRandomEnemyPos(limits, sceneWidth, sceneHeight);
-                while (CollissionHelper.collision(this.game.state.enemies, newEnemySize) 
-                || CollissionHelper.collisionNewEnemy(newEnemySize, newEnemies)) {
-                    newEnemySize = this.getRandomEnemyPos(limits, sceneWidth, sceneHeight);
+                let newEnemyLocation = PositionHelper.getRandomAroundReference(
+                    limits,
+                    this.game.refScene.current.state.refPlayer.current.state,
+                    this.game.refScene.current.state.ref.current
+                );
+                while (CollissionHelper.collision(this.game.state.enemies, newEnemyLocation, true) !== false
+                || CollissionHelper.collision(newEnemies, newEnemyLocation, false) !== false) {
+                    newEnemyLocation = PositionHelper.getRandomAroundReference(
+                        limits,
+                        this.game.refScene.current.state.refPlayer.current.state,
+                        this.game.refScene.current.state.ref.current
+                    );
                 }
-                newEnemies.push(newEnemySize);
+                newEnemies.push(newEnemyLocation);
                 enemies.push({
                     name: this.game.props.characters[posAddedEnemyType]["name"],
                     points: parseInt(this.game.props.characters[posAddedEnemyType]["points"] * this.game.state.points),
                     ref: React.createRef(),
-                    x: newEnemySize.left,
-                    y: newEnemySize.top
+                    x: newEnemyLocation.left,
+                    y: newEnemyLocation.top
                 });
             }
         }
@@ -74,14 +80,12 @@ class GameController {
     }
 
     collision() {
-        const hero = {
-            top: this.game.state.y,
-            bottom: this.game.state.y + this.game.refScene.current.state.refPlayer.current.state.height,
-            left: this.game.state.x,
-            right: this.game.state.x + this.game.refScene.current.state.refPlayer.current.state.width
-        };
+        const hero = PositionHelper.get(this.game.state, this.game.refScene.current.state.refPlayer.current.state);
+        return CollissionHelper.collision(this.game.state.enemies, hero, true);
+    }
 
-        return CollissionHelper.collision(this.game.state.enemies, hero);
+    collisionGift() {
+        return this.giftController.collision();
     }
 
     fight(selectedEnemy) {
@@ -90,6 +94,8 @@ class GameController {
             enemies: [],
             points: 0
         };
+
+        this.giftController.setLastSecondFight(this.game.state.seconds);
 
         if (selectedEnemy.points <= this.game.state.points) {
             let enemies = this.game.state.enemies;
@@ -105,24 +111,8 @@ class GameController {
         return result;
     }
 
-    getRandomEnemyPos(limits, sceneWidth, sceneHeight) {
-        const pos = {
-            x:  Math.floor(Math.random() * 2) === 1 
-                ? Math.floor(Math.random() * limits.left) 
-                : limits.right + Math.floor(Math.random() * (sceneWidth - limits.right)),
-
-            y:  Math.floor(Math.random() * 2) === 1 
-                ? Math.floor(Math.random() * limits.top) 
-                : limits.bottom + Math.floor(Math.random() * (sceneHeight - limits.bottom))
-        }
-
-        // Using hero size as reference, we are not looking for to be exact.
-        return {
-            top: pos.y,
-            bottom: pos.y + this.game.refScene.current.state.refPlayer.current.state.height,
-            left: pos.x,
-            right: pos.x + this.game.refScene.current.state.refPlayer.current.state.width
-        };
+    getGifts() {
+        return this.giftController.get();
     }
 
     increaseDifficult() {
@@ -163,11 +153,21 @@ class GameController {
             enemies[i]["y"] -= this.keys.up && this.keys.down ? 0 : this.keys.up ? -heroDistance : this.keys.down ? heroDistance : 0;
         }
 
-        return enemies;
+        let gifts = this.game.state.gifts;
+        for (let i = 0; i < gifts.length; i++) {
+            gifts[i]["x"] -= this.keys.left && this.keys.right ? 0 : this.keys.left ? -heroDistance : this.keys.right ? heroDistance : 0;
+            gifts[i]["y"] -= this.keys.up && this.keys.down ? 0 : this.keys.up ? -heroDistance : this.keys.down ? heroDistance : 0;
+        }
+
+        return {
+            enemies: enemies,
+            gifts: gifts
+        };
     }
 
     reset() {
         this.enemyDistance = initialEnemyDistance;
+        this.giftController = new GiftController(this.game);
         this.lastClickIncreaseDifficult = 0;
         this.maxEnemies = initialMaxEnemies;
         this.keys = {
@@ -198,19 +198,8 @@ class GameController {
         return enemies;
     }
 
-    /**
-     * To use at start game. Check at least one enemy can be defeated by player.
-     * @param {object} enemies
-     * @returns {bool}
-     */
-    validateInitialEnemies(enemies) {
-        for (let i = 0; i < enemies.length; i++) {
-            if (enemies[i].points <= this.game.state.points) {
-                return true;
-            }
-        }
-
-        return false;
+    validateEnemies(enemies) {
+        return EnemiesValidatorHelper.validate(enemies, this.game.state.points);
     }
 }
 

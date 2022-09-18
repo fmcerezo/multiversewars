@@ -1,37 +1,30 @@
 export default class CollisionHelper {
-    static collision(enemies, character) {
-        for (let i = 0; i < enemies.length; i++) {
-            const enemy = {
-                top: enemies[i].y,
-                bottom: enemies[i].y + enemies[i].ref.current.state.height,
-                left: enemies[i].x,
-                right: enemies[i].x + enemies[i].ref.current.state.width
+    static collision(objects, hero, useRef) {
+        for (let i = 0; i < objects.length; i++) {
+            const enemy = useRef 
+            ? 
+            {
+                top: objects[i].y,
+                bottom: objects[i].y + objects[i].ref.current.state.height,
+                left: objects[i].x,
+                right: objects[i].x + objects[i].ref.current.state.width
+            }
+            :
+            {
+                top: objects[i].top,
+                bottom: objects[i].bottom,
+                left: objects[i].left,
+                right: objects[i].right
             };
 
-            const collision = (character.left >= enemy.left && character.left <= enemy.right
-                || character.right >= enemy.left && character.right <= enemy.right)
+            const collision = (hero.left >= enemy.left && hero.left <= enemy.right
+                || hero.right >= enemy.left && hero.right <= enemy.right)
                 &&
-                (character.top >= enemy.top && character.top <= enemy.bottom
-                || character.bottom >= enemy.top && character.bottom <= enemy.bottom);
+                (hero.top >= enemy.top && hero.top <= enemy.bottom
+                || hero.bottom >= enemy.top && hero.bottom <= enemy.bottom);
             
             if (collision) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    static collisionNewEnemy(newEnemySize, newEnemies) {
-        for (let i = 0; i < newEnemies.length; i++) {
-            const collision = (newEnemySize.left >= newEnemies[i].left && newEnemySize.left <= newEnemies[i].right
-                || newEnemySize.right >= newEnemies[i].left && newEnemySize.right <= newEnemies[i].right)
-                &&
-                (newEnemySize.top >= newEnemies[i].top && newEnemySize.top <= newEnemies[i].bottom
-                || newEnemySize.bottom >= newEnemies[i].top && newEnemySize.bottom <= newEnemies[i].bottom);
-            
-            if (collision) {
-                return true;
+                return i;
             }
         }
 
