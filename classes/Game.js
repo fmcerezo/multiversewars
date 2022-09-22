@@ -9,7 +9,7 @@ class Game extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = GameController.getGameParams(true);
+        this.state = GameController.getInitialGameParams();
         
         this.handleClick = this.handleClick.bind(this);
         this.handleStartClick = this.handleStartClick.bind(this);
@@ -61,7 +61,7 @@ class Game extends React.Component {
         document.addEventListener('keyup', this.keyUpBind);
 
         this.setState(
-            GameController.getGameParams(false),
+            this.gameController.getGameParams(),
             () => {
                 this.gameController.reset();
 

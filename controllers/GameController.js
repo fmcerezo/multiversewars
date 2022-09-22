@@ -1,30 +1,13 @@
 import CollissionHelper from '../helpers/CollisionHelper';
 import EnemiesValidatorHelper from '../helpers/EnemiesValidatorHelper';
-import PositionHelper from '../helpers/PositionHelper';
+import GameParamsHelper from '../helpers/GameParamsHelper';
 import GiftController from './GiftController';
+import PositionHelper from '../helpers/PositionHelper';
 import React from 'react';
 
-const initialEnemyDistance = 0;
-const initialMaxEnemies = 3;
-const initialPoints = 1;
-const maxEnemyDistance = 6;
-const heroDistance = 1;
-
 class GameController {
-    static getGameParams(showStartScreen) {
-        return {
-            backColor: 'transparent',
-            clicks: 0,
-            enemies: [],
-            gifts: [],
-            points: initialPoints,
-            showRegisterScreen: false,
-            showStartScreen: showStartScreen,
-            screen: 1,
-            seconds: 0,
-            x: 500,
-            y: 200
-        };
+    static getInitialGameParams() {
+        return GameParamsHelper.getInitialGameParams();
     }
 
     constructor(game) {
@@ -104,11 +87,18 @@ class GameController {
             result = {
                 win: true,
                 enemies: enemies,
-                points: this.game.state.points + parseInt(selectedEnemy.points / 10) + initialPoints
+                points: this.game.state.points + parseInt(selectedEnemy.points / 10) + GameParamsHelper.initialPoints
             };
         }
         
         return result;
+    }
+
+    getGameParams() {
+        return GameParamsHelper.getGameParams(
+            this.game.refScene.current.state.ref.current,
+            this.game.refScene.current.state.refPlayer.current.state
+        );
     }
 
     getGifts() {
@@ -116,7 +106,7 @@ class GameController {
     }
 
     increaseDifficult() {
-        if (maxEnemyDistance >= this.enemyDistance 
+        if (GameParamsHelper.maxEnemyDistance >= this.enemyDistance 
             && (this.lastClickIncreaseDifficult < this.game.state.clicks || 0 === this.game.state.clicks)
             && this.game.state.clicks % 10 === 0) {
             this.lastClickIncreaseDifficult = this.game.state.clicks;
@@ -149,14 +139,14 @@ class GameController {
 
         let enemies = this.game.state.enemies;
         for (let i = 0; i < enemies.length; i++) {
-            enemies[i]["x"] -= this.keys.left && this.keys.right ? 0 : this.keys.left ? -heroDistance : this.keys.right ? heroDistance : 0;
-            enemies[i]["y"] -= this.keys.up && this.keys.down ? 0 : this.keys.up ? -heroDistance : this.keys.down ? heroDistance : 0;
+            enemies[i]["x"] -= this.keys.left && this.keys.right ? 0 : this.keys.left ? -GameParamsHelper.heroDistance : this.keys.right ? GameParamsHelper.heroDistance : 0;
+            enemies[i]["y"] -= this.keys.up && this.keys.down ? 0 : this.keys.up ? -GameParamsHelper.heroDistance : this.keys.down ? GameParamsHelper.heroDistance : 0;
         }
 
         let gifts = this.game.state.gifts;
         for (let i = 0; i < gifts.length; i++) {
-            gifts[i]["x"] -= this.keys.left && this.keys.right ? 0 : this.keys.left ? -heroDistance : this.keys.right ? heroDistance : 0;
-            gifts[i]["y"] -= this.keys.up && this.keys.down ? 0 : this.keys.up ? -heroDistance : this.keys.down ? heroDistance : 0;
+            gifts[i]["x"] -= this.keys.left && this.keys.right ? 0 : this.keys.left ? -GameParamsHelper.heroDistance : this.keys.right ? GameParamsHelper.heroDistance : 0;
+            gifts[i]["y"] -= this.keys.up && this.keys.down ? 0 : this.keys.up ? -GameParamsHelper.heroDistance : this.keys.down ? GameParamsHelper.heroDistance : 0;
         }
 
         return {
@@ -166,10 +156,10 @@ class GameController {
     }
 
     reset() {
-        this.enemyDistance = initialEnemyDistance;
+        this.enemyDistance = GameParamsHelper.initialEnemyDistance;
         this.giftController = new GiftController(this.game);
         this.lastClickIncreaseDifficult = 0;
-        this.maxEnemies = initialMaxEnemies;
+        this.maxEnemies = GameParamsHelper.initialMaxEnemies;
         this.keys = {
             up: false,
             down: false,
