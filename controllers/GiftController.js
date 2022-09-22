@@ -43,10 +43,10 @@ export default class GiftController {
             this.given = true;
 
             const hero = PositionHelper.get(this.game.state, this.game.refScene.current.state.refPlayer.current.state);
-            const random = PositionHelper.getRandomAroundReference(
+            const random = PositionHelper.getCloserRandomAroundReference(
                 hero,
                 this.game.refScene.current.state.refPlayer.current.state,
-                this.game.refScene.current.state.ref.current
+                5
             );
 
             return [

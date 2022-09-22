@@ -21,8 +21,8 @@ class GameController {
         if (0 < totalEnemiesToAdd) {
             this.increaseDifficult();
 
-            const heightDistance = this.game.refScene.current.state.refPlayer.current.state.height * 3;
-            const widthDistance = this.game.refScene.current.state.refPlayer.current.state.width * 3;
+            const heightDistance = this.game.refScene.current.state.refPlayer.current.state.height * 2;
+            const widthDistance = this.game.refScene.current.state.refPlayer.current.state.width * 2;
 
             const hero = PositionHelper.get(this.game.state, this.game.refScene.current.state.refPlayer.current.state);
             const limits = PositionHelper.getExtended(hero, widthDistance, heightDistance);
@@ -33,15 +33,13 @@ class GameController {
                 
                 let newEnemyLocation = PositionHelper.getRandomAroundReference(
                     limits,
-                    this.game.refScene.current.state.refPlayer.current.state,
-                    this.game.refScene.current.state.ref.current
+                    this.game.refScene.current.state.refPlayer.current.state
                 );
                 while (CollissionHelper.collision(this.game.state.enemies, newEnemyLocation, true) !== false
                 || CollissionHelper.collision(newEnemies, newEnemyLocation, false) !== false) {
                     newEnemyLocation = PositionHelper.getRandomAroundReference(
                         limits,
-                        this.game.refScene.current.state.refPlayer.current.state,
-                        this.game.refScene.current.state.ref.current
+                        this.game.refScene.current.state.refPlayer.current.state
                     );
                 }
                 newEnemies.push(newEnemyLocation);

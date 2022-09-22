@@ -17,18 +17,25 @@ export default class PositionHelper {
         };
     }
 
-    static getRandomAroundReference(reference, whContainer, whScene) {
+    static getCloserRandomAroundReference(reference, whContainer, closeLevel) {
+        const horizontalDistance = Math.floor(Math.random() * (reference.left / closeLevel));
+        const verticalDistance = Math.floor(Math.random() * (reference.top / closeLevel));
+
         const pos = {
             x:  Math.floor(Math.random() * 2) === 1 
-                ? Math.floor(Math.random() * reference.left) 
-                : reference.right + Math.floor(Math.random() * (whScene.clientWidth - reference.right)),
+                ? reference.left - (horizontalDistance + whContainer.width)
+                : reference.right + horizontalDistance,
 
             y:  Math.floor(Math.random() * 2) === 1 
-                ? Math.floor(Math.random() * reference.top) 
-                : reference.bottom + Math.floor(Math.random() * (whScene.clientHeight - reference.bottom))
+                ? reference.top - (verticalDistance + whContainer.height)
+                : reference.bottom + verticalDistance
         }
 
         // Using hero size as reference, we are not looking for to be exact.
         return PositionHelper.get(pos, whContainer);
+    }
+
+    static getRandomAroundReference(reference, whContainer) {
+        return PositionHelper.getCloserRandomAroundReference(reference, whContainer, 1);
     }
 }
