@@ -52,7 +52,7 @@ export default class GiftController {
             return [
                 {
                     "type": "powerup",
-                    "points": 10,
+                    "points": this.getGiftPoints(),
                     "ref": React.createRef(),
                     "x": random.left,
                     "y": random.top
@@ -61,6 +61,17 @@ export default class GiftController {
         } else {
             return [];
         }
+    }
+
+    getGiftPoints() {
+        let points = Number.MAX_SAFE_INTEGER;
+
+        this.game.state.enemies.forEach(enemy => {
+            const difference = enemy.points - this.game.state.points;
+            points = difference < points ? difference : points;
+        });
+
+        return points;
     }
 
     isGiftPending() {
