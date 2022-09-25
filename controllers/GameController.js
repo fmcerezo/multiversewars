@@ -4,6 +4,7 @@ import GameParamsHelper from '../helpers/GameParamsHelper';
 import GiftController from './GiftController';
 import PositionHelper from '../helpers/PositionHelper';
 import React from 'react';
+import UpdateEnemiesPositionController from './UpdateEnemiesPositionController';
 
 class GameController {
     static getInitialGameParams() {
@@ -167,23 +168,14 @@ class GameController {
     }
 
     updateEnemiesPosition() {
-        let enemies = this.game.state.enemies;
-        for (let i = 0; i < enemies.length; i++) {
-            enemies[i]["x"] = this.game.state.x + this.enemyDistance >= enemies[i]["x"]
-                                    && this.game.state.x - this.enemyDistance <= enemies[i]["x"]
-                                ? this.game.state.x
-                                : this.game.state.x < enemies[i]["x"]
-                                ? enemies[i]["x"] - this.enemyDistance
-                                : enemies[i]["x"] + this.enemyDistance;
-            enemies[i]["y"] = this.game.state.y + this.enemyDistance >= enemies[i]["y"]
-                                    && this.game.state.y - this.enemyDistance <= enemies[i]["y"]
-                                ? this.game.state.y
-                                : this.game.state.y < enemies[i]["y"]
-                                ? enemies[i]["y"] - this.enemyDistance
-                                : enemies[i]["y"] + this.enemyDistance;
-        }
-        
-        return enemies;
+        return UpdateEnemiesPositionController.getUpdated(
+            {
+                x: this.game.state.x,
+                y: this.game.state.y
+            },
+            this.game.state.enemies,
+            this.enemyDistance
+        );
     }
 
     validateEnemies(enemies) {
