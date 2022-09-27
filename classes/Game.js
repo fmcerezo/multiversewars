@@ -1,4 +1,4 @@
-import heroImg from '../pages/img/zombi.jpg';
+import imgHero from '../pages/img/hero.jpg';
 import GameController from '../controllers/GameController';
 import PushStart from './PushStart';
 import Scene from './Scene';
@@ -116,7 +116,7 @@ class Game extends React.Component {
         return      <Scene 
                         ref={this.refScene}
                         backColor={this.state.backColor}
-                        heroImg={heroImg}
+                        heroImg={imgHero}
                         points={this.state.points} 
                         seconds={this.state.seconds} 
                         enemies={this.state.enemies}

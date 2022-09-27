@@ -19,6 +19,15 @@ class Avatar extends React.Component {
         });
     }
 
+    componentDidUpdate() {
+        if (this.state.height != this.ref.current.clientHeight) {
+            this.setState({
+                width: this.ref.current.clientWidth,
+                height: this.ref.current.clientHeight
+            });
+        }
+    }
+
     render() {
         return  <div onClick={() => this.props.handleClick != null ? this.props.handleClick(this.props) : false}
                     className="col-1"
@@ -31,8 +40,15 @@ class Avatar extends React.Component {
                         left: this.props.x
                         }}
                 >
-                    <p>{this.props.points}</p>
-                    <p>{this.props.name}</p>
+                    <p style={{
+                        margin: '0px'
+                    }}>{this.props.points}</p>
+                    <img 
+                        src={this.props.imgSrc.default.src}
+                        style={{
+                            width: '100%'
+                        }}
+                    />
                 </div>;
     }
 }

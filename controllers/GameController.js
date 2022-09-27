@@ -14,6 +14,10 @@ class GameController {
     constructor(game) {
         this.game = game;
         this.reset();
+        this.charactersImg = [];
+        this.game.props.characters.forEach((item => {
+            this.charactersImg.push(require('../pages/img/' + item.name.toLowerCase().replace(" ", "-") + '.jpg'));
+        }));
     }
 
     calculateEnemies(enemies) {
@@ -45,6 +49,7 @@ class GameController {
                 }
                 newEnemies.push(newEnemyLocation);
                 enemies.push({
+                    imgSrc: this.charactersImg[posAddedEnemyType],
                     name: this.game.props.characters[posAddedEnemyType]["name"],
                     points: parseInt(this.game.props.characters[posAddedEnemyType]["points"] * this.game.state.points),
                     ref: React.createRef(),

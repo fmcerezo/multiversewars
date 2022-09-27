@@ -8,6 +8,8 @@ class Scene extends React.Component {
     constructor(props) {
         super(props);
 
+        this.imgHeroSrc = require('../pages/img/hero.jpg');
+
         this.state = {
             ref: React.createRef(),
             refPlayer: React.createRef()
@@ -28,6 +30,7 @@ class Scene extends React.Component {
                         {this.props.enemies.map((item, index) => <Avatar
                                                             key={index}
                                                             id={index}
+                                                            imgSrc={item.imgSrc}
                                                             name={item.name}
                                                             points={item.points}
                                                             ref={item.ref}
@@ -45,8 +48,9 @@ class Scene extends React.Component {
                                                             y={gift.y}
                                                         />)}
                         <Avatar
+                            imgSrc={this.imgHeroSrc}
                             ref={this.state.refPlayer}
-                            name={'Hero'}
+                            name={'hero'}
                             points={this.props.points}
                             x={this.props.x}
                             y={this.props.y}
