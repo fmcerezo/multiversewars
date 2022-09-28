@@ -1,5 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Game from '../classes/Game';
+import Game from '../components/Game';
 
 export async function getServerSideProps() {
     // Fetch data from external API

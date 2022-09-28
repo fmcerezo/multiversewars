@@ -2,6 +2,7 @@ import { Button } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
 import Card from 'react-bootstrap/Card';
 import RegisterController from "../controllers/RegisterController";
+import RegisterScreenForm from './RegisterScreenForm';
 
 export default function RegisterScreen(props) {
     const [submitResponse, setSubmitResponse] = useState(0);
@@ -48,27 +49,5 @@ export default function RegisterScreen(props) {
                 <p className="mt-5"><Card.Link href="/records">Records</Card.Link></p>
             </div>
         </div>
-    }
-}
-
-function RegisterScreenForm(props) {
-    if (200 === props.status) {
-        return  <div>Points recorded!</div>;
-    } else if (0 < props.status) {
-        return  <div>Sorry, your points could not be registered.</div>;
-    } else {
-        return  <form onSubmit={props.submit}>
-                    <input id="points" type="hidden" value={props.points} />
-                    <div className="mb-2">
-                        <label htmlFor="name">Type your name to save your register:</label>
-                        <input className="form-control" id="name" type="text" minLength="3" />
-                    </div>
-                    <Button 
-                        as="input"
-                        type="submit"
-                        variant="primary"
-                        value="Submit"
-                    />
-                </form>;
     }
 }
