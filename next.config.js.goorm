@@ -1,0 +1,6 @@
+module.exports = {
+    env: {
+        API_URL: "https://multiversewars-rgelf.run-eu-central1.goorm.io",
+        LIST_RECORDS_PER_PAGE: 10
+    },
+}
