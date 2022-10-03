@@ -1,3 +1,3 @@
-import handler from "../../../utils/api.js";
+import API from "../../../utils/api.js";
 
-export default handler;
+export default API.handler;

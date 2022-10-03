@@ -109,6 +109,15 @@ class GameController {
         return this.giftController.get();
     }
 
+    getState() {
+        return {
+            enemyDistance: this.enemyDistance,
+            giftState: this.giftController.getState(),
+            lastClickIncreaseDifficult: this.lastClickIncreaseDifficult,
+            maxEnemies: this.maxEnemies
+        };
+    }
+
     increaseDifficult() {
         if (GameParamsHelper.maxEnemyDistance >= this.enemyDistance 
             && (this.lastClickIncreaseDifficult < this.game.state.clicks || 0 === this.game.state.clicks)
@@ -170,6 +179,25 @@ class GameController {
             left: false,
             right: false
         };
+    }
+
+    restore(savedGame) {
+        const loadedState = savedGame.state;
+
+        loadedState.enemies.forEach(enemy => {
+            enemy.ref = React.createRef();
+        });
+
+        loadedState.gifts.forEach(gift => {
+            gift.ref = React.createRef();
+        });
+
+        this.enemyDistance = savedGame.controllerState.enemyDistance;
+        this.giftController.restore(savedGame.controllerState.giftState);
+        this.lastClickIncreaseDifficult = savedGame.controllerState.lastClickIncreaseDifficult;
+        this.maxEnemies = savedGame.controllerState.maxEnemies;
+
+        return loadedState;
     }
 
     updateEnemiesPosition() {

@@ -25,6 +25,7 @@ class Scene extends React.Component {
                 }}>
                     {this.props.startScreen}
                     {this.props.registerScreen}
+                    {this.props.cardScreen}
                     <div className="col-12" ref={this.state.ref}>
                         Scene {this.props.seconds} seconds - {this.props.clicks} Game clicks - X: {this.props.x} Y: {this.props.y}
                         {this.props.enemies.map((item, index) => <Avatar
@@ -58,8 +59,19 @@ class Scene extends React.Component {
                     </div>
                 </div>
                 <div className="row h-25">
-                    <div className="col-4"><HeroPanel backColor={this.props.backColor} heroImg={this.props.heroImg} points={this.props.points} /></div>
-                    <div className="col-8"><EnemiesScene enemies={this.props.enemies}/></div>
+                    <div className="col-4">
+                        <HeroPanel
+                            backColor={this.props.backColor}
+                            heroImg={this.props.heroImg}
+                            openCardScreen={this.props.openCardScreen}
+                            points={this.props.points}
+                        />
+                    </div>
+                    <div className="col-8">
+                        <EnemiesScene
+                            enemies={this.props.enemies}
+                        />
+                        </div>
                 </div>
             </div>
     }

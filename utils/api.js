@@ -46,6 +46,13 @@ class Data {
           };
     }
 
+    async findOne(query) {
+        const col = await this.getCollection();
+        const result = await col.findOne(query);
+        this.client.close();
+        return result;
+    }
+
     async getCollection() {
         await this.client.connect();
         return this.client.db(process.env.DB_SCHEMA).collection(this.collectionName);
@@ -58,31 +65,55 @@ class Data {
     }
 }
 
-export default async function handler(req, res) {
-    const { method } = req;
-    const arrayUrl = req.url.split("/");
-    const collectionName = arrayUrl.splice(-1)[0].split("?")[0];
-    const data = new Data(collectionName);
+const API = {
+    handler: async (req, res) => {
+        const { method } = req;
+        const arrayUrl = req.url.split("/");
+        const collectionName = arrayUrl.splice(-1)[0].split("?")[0];
+        const data = new Data(collectionName);
 
-    switch (method) {
-        case "GET":
-            const results = await data.findAll(req.query);
-            let json = {};
-            json[collectionName] = results;
-            res.status(200).json(json);
-            break;
+        switch (method) {
+            case "GET":
+                const results = await data.findAll(req.query);
+                let json = {};
+                json[collectionName] = results;
+                res.status(200).json(json);
+                break;
 
-        case "POST":
-            await data.insert(req.body);
-            res.status(200).json({ message: "POST" });
-            break;
+            case "POST":
+                await data.insert(req.body);
+                res.status(200).json({ message: "POST" });
+                break;
 
-        case "DELETE":
-            await data.eraseAll();
-            res.status(200).json({ message: "DELETE" });
-            break;
-        
-        default:
-            res.status(404).json({ message: "Not found" });
+            case "DELETE":
+                await data.eraseAll();
+                res.status(200).json({ message: "DELETE" });
+                break;
+            
+            default:
+                res.status(404).json({ message: "Not found" });
+        }
+    },
+
+    handlerItem: async (req, res) => {
+        const { method } = req;
+        const arrayUrl = req.url.split("/");
+        const collectionName = arrayUrl.splice(-2)[0];
+        const data = new Data(collectionName);
+
+        switch (method) {
+            case "GET":
+                let results = await data.findOne(req.query);
+                if (null === results) {
+                    results = {};
+                }
+                res.status(200).json(results);
+                break;
+            
+            default:
+                res.status(404).json({ message: "Not found" });
+        }
     }
 }
+
+export default API;

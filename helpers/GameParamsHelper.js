@@ -24,6 +24,7 @@ const GameParamsHelper = {
             enemies: [],
             gifts: [],
             points: GameParamsHelper.initialPoints,
+            showCardScreen: false,
             showRegisterScreen: false,
             showStartScreen: true,
             screen: 1,

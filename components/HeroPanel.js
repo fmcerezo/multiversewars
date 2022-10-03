@@ -17,11 +17,23 @@ function HeroPanel(props) {
                     }}>
                     <div>{props.points}</div>
                     <div>
-                        <ItemInventory itemName="Hacha" />
-                        <ItemInventory itemName="Coraza" />
+                        <Button
+                            className="mt-2"
+                            as="input"
+                            type="button"
+                            variant="primary"
+                            value="Inventory"
+                        />
                     </div>
                     <div>
-                        <Button variant="primary">Inventory</Button>
+                        <Button
+                            className="mt-2"
+                            as="input"
+                            onClick={props.openCardScreen}
+                            type="button"
+                            variant="primary"
+                            value="Game"
+                        />
                     </div>
                 </div>
             </div>

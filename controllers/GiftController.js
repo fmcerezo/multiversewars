@@ -74,8 +74,20 @@ export default class GiftController {
         return points;
     }
 
+    getState() {
+        return {
+            given: this.given,
+            lastSecondFight: this.lastSecondFight
+        };
+    }
+
     isGiftPending() {
         return this.given;
+    }
+
+    restore (state) {
+        this.given = state.given;
+        this.lastSecondFight = state.lastSecondFight;
     }
 
     setLastSecondFight(second) {

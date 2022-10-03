@@ -1,3 +1,4 @@
+import CardScreen from './CardScreen';
 import imgHero from '../pages/img/hero.jpg';
 import GameController from '../controllers/GameController';
 import PushStart from './PushStart';
@@ -12,6 +13,7 @@ class Game extends React.Component {
         this.state = GameController.getInitialGameParams();
         
         this.handleClick = this.handleClick.bind(this);
+        this.handleCardClick = this.handleCardClick.bind(this);
         this.handleStartClick = this.handleStartClick.bind(this);
         this.refScene = React.createRef();
     }
@@ -29,6 +31,10 @@ class Game extends React.Component {
             showRegisterScreen: true
         });
         clearInterval(this.interval);
+    }
+
+    handleCardClick(open) {
+        this.setState({ showCardScreen: open });
     }
 
     handleClick(selectedEnemy) {
@@ -123,6 +129,7 @@ class Game extends React.Component {
                         gifts={this.state.gifts}
                         clicks={this.state.clicks}
                         onClick={this.state.backColor == 'transparent' ? this.handleClick : null}
+                        openCardScreen={() => this.handleCardClick(true)}
                         x={this.state.x}
                         y={this.state.y}
                         startScreen={<PushStart
@@ -134,7 +141,19 @@ class Game extends React.Component {
                             points={this.state.points}
                             show={this.state.showRegisterScreen}
                         />}
+                        cardScreen={<CardScreen
+                            closeCardScreen={() => this.handleCardClick(false)}
+                            controllerState={this.gameController 
+                                ? this.gameController.getState()
+                                : null}
+                            restoreGame={(savedGame) => this.restore(savedGame)}
+                            state={this.state}
+                        />}
                     />
+    }
+
+    restore(savedGame) {
+        this.setState(this.gameController.restore(savedGame));
     }
 }
 
