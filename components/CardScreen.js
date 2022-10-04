@@ -7,12 +7,10 @@ export default function CardScreen(props) {
         const savedGame = await CardController.load(gameCode);
 
         if (false !== savedGame && undefined !== savedGame.state) {
-            alert(JSON.stringify(savedGame));
+            props.restoreGame(savedGame);
         } else {
             alert('Error loading');
         }
-
-        props.restoreGame(savedGame);
         props.closeCardScreen();
     };
 
