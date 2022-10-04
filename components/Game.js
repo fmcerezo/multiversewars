@@ -24,16 +24,15 @@ class Game extends React.Component {
     }
 
     componentWillUnmount() {
-        document.removeEventListener('keydown', this.keyDownBind);
-        document.removeEventListener('keyup', this.keyUpBind);
+        this.pause(true);
         this.setState({ 
             backColor: 'red',
             showRegisterScreen: true
         });
-        clearInterval(this.interval);
     }
 
     handleCardClick(open) {
+        this.pause(open);
         this.setState({ showCardScreen: open });
     }
 
@@ -60,12 +59,6 @@ class Game extends React.Component {
     }
 
     handleStartClick() {
-        this.keyDownBind = this.handleKeyDown.bind(this);
-        document.addEventListener('keydown', this.keyDownBind);
-        
-        this.keyUpBind = this.handleKeyUp.bind(this);
-        document.addEventListener('keyup', this.keyUpBind);
-
         this.setState(
             this.gameController.getGameParams(),
             () => {
@@ -80,13 +73,30 @@ class Game extends React.Component {
                 this.setState({
                     enemies: enemies,
                 });
-        
-                var me = this;
-                this.interval = setInterval(function () {
-                    me.refresh();
-                }, 200);
+
+                this.pause(false);
             }
         );
+    }
+
+    pause(start) {
+        if (start) {
+            document.removeEventListener('keydown', this.keyDownBind);
+            document.removeEventListener('keyup', this.keyUpBind);
+
+            clearInterval(this.interval);
+        } else {
+            this.keyDownBind = this.handleKeyDown.bind(this);
+            document.addEventListener('keydown', this.keyDownBind);
+            
+            this.keyUpBind = this.handleKeyUp.bind(this);
+            document.addEventListener('keyup', this.keyUpBind);
+
+            var me = this;
+            this.interval = setInterval(function () {
+                me.refresh();
+            }, 200);
+        }
     }
 
     refresh() {
