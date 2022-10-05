@@ -167,8 +167,6 @@ class Game extends React.Component {
 
     restore(savedGame) {
         this.setState(this.gameController.restore(savedGame));
-        this.handleCardClick(false);
-        this.pause(false);
     }
 }
 

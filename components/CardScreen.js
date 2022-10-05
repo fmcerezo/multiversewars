@@ -10,8 +10,8 @@ export default function CardScreen(props) {
             props.restoreGame(savedGame);
         } else {
             alert('Error loading');
-            props.closeCardScreen();
         }
+        props.closeCardScreen();
     };
 
     const save = async () => {
