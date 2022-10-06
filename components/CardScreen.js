@@ -26,6 +26,8 @@ export default function CardScreen(props) {
             zIndex: '1010'
         }}>
             <div className="text-center">
+                {!props.state.showStartScreen && !props.state.showRegisterScreen
+                ?
                 <div className="row">
                     <Button
                         as="input"
@@ -35,6 +37,7 @@ export default function CardScreen(props) {
                         variant="primary"
                     />
                 </div>
+                : null}
                 <div className="row mt-5">
                     <label htmlFor="gameCode">Type your game code:</label>
                     <input 
