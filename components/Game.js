@@ -33,7 +33,7 @@ class Game extends React.Component {
 
     handleCardClick(open) {
         //Continues game if it was started.
-        if (open || 0 < this.state.seconds || this.state.showStartScreen) {
+        if (open || 0 < this.state.seconds) {
             this.pause(open);
         }
         this.setState({ showCardScreen: open });
@@ -166,7 +166,10 @@ class Game extends React.Component {
     }
 
     restore(savedGame) {
-        this.setState(this.gameController.restore(savedGame));
+        const state = this.gameController.restore(savedGame);
+        state.showCardScreen = false;
+        this.setState(state);
+        this.pause(false);
     }
 }
 

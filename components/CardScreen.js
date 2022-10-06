@@ -11,7 +11,6 @@ export default function CardScreen(props) {
         } else {
             alert('Error loading');
         }
-        props.closeCardScreen();
     };
 
     const save = async () => {
