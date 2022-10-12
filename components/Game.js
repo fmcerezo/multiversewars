@@ -33,7 +33,7 @@ class Game extends React.Component {
 
     handleCardClick(open) {
         //Continues game if it was started.
-        if (open || 0 < this.state.seconds) {
+        if (open || 0 < this.state.seconds && !this.state.showRegisterScreen) {
             this.pause(open);
         }
         this.setState({ showCardScreen: open });
