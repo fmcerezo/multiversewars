@@ -5,6 +5,13 @@ class Data {
         this.collectionName = collectionName;
     }
 
+    async deleteOne(filter, data) {
+        const col = await this.getCollection();
+        const result = await col.deleteOne(filter, data);
+        this.client.close();
+        return result;
+    }
+
     async eraseAll() {
         const col = await this.getCollection();
         await col.deleteMany();
@@ -63,6 +70,13 @@ class Data {
         await col.insertOne(data);
         this.client.close();
     }
+
+    async updateOne(filter, data) {
+        const col = await this.getCollection();
+        const result = await col.updateOne(filter, { $set: data });
+        this.client.close();
+        return result;
+    }
 }
 
 const API = {
@@ -108,6 +122,22 @@ const API = {
                     results = {};
                 }
                 res.status(200).json(results);
+                break;
+
+            case "PUT":
+                let updateResult = await data.updateOne(req.query, req.body);
+                if (null === updateResult) {
+                    results = {};
+                }
+                res.status(200).json(updateResult);
+                break;
+
+            case "DELETE":
+                let deleteResult = await data.deleteOne(req.query);
+                if (null === deleteResult) {
+                    results = {};
+                }
+                res.status(200).json(deleteResult);
                 break;
             
             default:
