@@ -1,4 +1,5 @@
 import { Button } from 'react-bootstrap';
+import { confirmAlert } from 'react-confirm-alert';
 import { useEffect} from 'react';
 import CardController from '../controllers/CardController';
 import CookieController from '../controllers/CookieController';
@@ -12,13 +13,27 @@ export default function CardScreen(props) {
         } catch (Exception) {}
     };
 
-    const erase = async () => {
-        if (confirm('You selected delete game, are you sure?')) {
-            const gameCode = document.getElementById("gameCode").value;
-            await CardController.delete(gameCode);
-            document.getElementById("gameCode").value = "";
-            checkButtonsState();
-        }
+    const erase = () => {
+        confirmAlert({
+            title: 'Delete game',
+            message: 'You selected delete game, are you sure?',
+            buttons: [
+              {
+                label: 'Yes',
+                onClick: async () => {
+                    const gameCode = document.getElementById("gameCode").value;
+                    await CardController.delete(gameCode);
+                    document.getElementById("gameCode").value = "";
+                    checkButtonsState();
+                }
+              },
+              {
+                label: 'No'
+              }
+            ],
+            closeOnEscape: true,
+            closeOnClickOutside: true
+          });
     };
 
     const load = async () => {
@@ -40,11 +55,7 @@ export default function CardScreen(props) {
     useEffect(checkButtonsState);
 
     if (props.state.showCardScreen) {
-        return  <div className="h-100 col-6 offset-3 rounded position-absolute d-flex justify-content-center align-items-center" style={{
-            backgroundColor: 'lightgrey',
-            border: '10px solid black',
-            zIndex: '1010'
-        }}>
+        return  <div className={props.styles}>
             <div className="text-center">
                 {!props.state.showStartScreen && !props.state.showRegisterScreen
                 ?

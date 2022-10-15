@@ -1,4 +1,3 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { useState, useEffect } from 'react';
 import Card from 'react-bootstrap/Card';
 import ReactPaginate from 'react-paginate';
@@ -23,14 +22,9 @@ export default function RecordsScreen() {
     }
 
     if (records != null) {
-        return  <div className="container" style={{
-                    height: '100vh'
-                }}>
+        return  <div className="container fullHeight">
                     <div className="row h-75">
-                        <div className="col-6 offset-3 rounded" style={{
-                        backgroundColor: 'lightgrey',
-                        border: '10px solid black'
-                    }}>
+                        <div className="col-6 offset-3 rounded screen">
                             <h1 className="text-center">Records</h1>
                             <Records
                                 meta={records.records.meta}

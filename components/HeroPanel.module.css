@@ -1,0 +1,8 @@
+.heroPanel {
+    border: 10px solid black;
+    text-align: center;
+}
+
+.heroPanel img {
+    height: 100px;
+}

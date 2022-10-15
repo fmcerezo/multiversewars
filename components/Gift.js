@@ -22,15 +22,12 @@ class Gift extends React.Component {
     render () {
         if ('powerup' === this.props.type) {
             return  <div
-                        className="col-1"
+                        className="col-1 screenObject"
                         ref={this.ref}
                         style={{
-                            border: '2px solid black',
-                            position: 'absolute',
-                            textAlign: 'center',
                             top: this.props.y,
                             left: this.props.x
-                            }}
+                        }}
                     >
                         <p>{this.props.points}</p>
                         <p>POWER UP</p>

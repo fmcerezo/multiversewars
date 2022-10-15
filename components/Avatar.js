@@ -1,3 +1,4 @@
+import style from './Avatar.module.css';
 import React from 'react';
 
 class Avatar extends React.Component {
@@ -30,25 +31,15 @@ class Avatar extends React.Component {
 
     render() {
         return  <div onClick={() => this.props.handleClick != null ? this.props.handleClick(this.props) : false}
-                    className="col-1"
+                    className={`${'col-1 screenObject'} ${style.avatar}`}
                     ref={this.ref}
                     style={{
-                        border: '2px solid black',
-                        position: 'absolute',
-                        textAlign: 'center',
                         top: this.props.y,
                         left: this.props.x
-                        }}
+                    }}
                 >
-                    <p style={{
-                        margin: '0px'
-                    }}>{this.props.points}</p>
-                    <img 
-                        src={this.props.imgSrc.default.src}
-                        style={{
-                            width: '100%'
-                        }}
-                    />
+                    <p>{this.props.points}</p>
+                    <img src={this.props.imgSrc.default.src} />
                 </div>;
     }
 }

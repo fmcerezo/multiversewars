@@ -1,0 +1,15 @@
+.fullHeight {
+    height: 100vh
+}
+
+.screen {
+    background-color: lightgrey;
+    border: 10px solid black;
+    z-index: 2
+}
+
+.screenObject {
+    border: 2px solid black;
+    position: absolute;
+    text-align: center;
+}

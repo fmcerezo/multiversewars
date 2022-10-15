@@ -1,20 +1,12 @@
+import style from './HeroPanel.module.css';
 import { Button } from 'react-bootstrap';
 
 function HeroPanel(props) {
     return  <div className="row">
-                <div className="col-6" style={{
-                    backgroundColor: props.backColor,
-                    border: '10px solid black',
-                    textAlign: 'center'
-                    }}>
-                    <img 
-                        src={props.heroImg.src}
-                        height={'100px'}
-                    />
+                <div className={`${'col-6'} ${style.heroPanel}`} style={{ backgroundColor: props.backColor }}>
+                    <img src={props.heroImg.src} />
                 </div>
-                <div className="col-6" style={{
-                    textAlign: 'center'
-                    }}>
+                <div className="col-6 text-center">
                     <div>{props.points}</div>
                     <div>
                         <Button

@@ -1,3 +1,4 @@
+import style from './Scene.module.css';
 import Avatar from './Avatar';
 import EnemiesScene from './EnemiesScene';
 import Gift from './Gift';
@@ -17,12 +18,8 @@ class Scene extends React.Component {
     }
     
     render() {
-        return  <div className="container" style={{height: '100vh'}}>
-                <div className="row h-75" style={{
-                    border: '1px solid black',
-                    position: 'relative',
-                    overflow: 'hidden'
-                }}>
+        return  <div className="container fullHeight">
+                <div className={`${'row h-75'} ${style.scene}`}>
                     {this.props.startScreen}
                     {this.props.registerScreen}
                     {this.props.cardScreen}

@@ -132,6 +132,8 @@ class Game extends React.Component {
     }
 
     render() {
+        const styles = "h-100 col-6 offset-3 rounded position-absolute d-flex justify-content-center align-items-center screen";
+
         return      <Scene 
                         ref={this.refScene}
                         backColor={this.state.backColor}
@@ -146,13 +148,15 @@ class Game extends React.Component {
                         x={this.state.x}
                         y={this.state.y}
                         startScreen={<PushStart
-                            show={this.state.showStartScreen}
                             onClick={this.handleStartClick}
+                            show={this.state.showStartScreen}
+                            styles={styles}
                         />}
                         registerScreen={<RegisterScreen
                             onClick={this.handleStartClick}
                             points={this.state.points}
                             show={this.state.showRegisterScreen}
+                            styles={styles}
                         />}
                         cardScreen={<CardScreen
                             closeCardScreen={() => this.handleCardClick(false)}
@@ -161,6 +165,7 @@ class Game extends React.Component {
                                 : null}
                             restoreGame={(savedGame) => this.restore(savedGame)}
                             state={this.state}
+                            styles={styles}
                         />}
                     />
     }
