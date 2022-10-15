@@ -16,7 +16,7 @@ class GameController {
         this.reset();
         this.charactersImg = [];
         this.game.props.characters.forEach((item => {
-            this.charactersImg.push(require('../pages/img/' + item.name.toLowerCase().replace(" ", "-") + '.jpg'));
+            this.charactersImg.push(require('../assets/images/' + item.name.toLowerCase().replace(" ", "-") + '.jpg'));
         }));
     }
 

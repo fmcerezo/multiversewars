@@ -9,7 +9,7 @@ class Scene extends React.Component {
     constructor(props) {
         super(props);
 
-        this.imgHeroSrc = require('../pages/img/hero.jpg');
+        this.imgHeroSrc = require('../assets/images/hero.jpg');
 
         this.state = {
             ref: React.createRef(),
@@ -59,7 +59,7 @@ class Scene extends React.Component {
                     <div className="col-4">
                         <HeroPanel
                             backColor={this.props.backColor}
-                            heroImg={this.props.heroImg}
+                            heroImg={this.imgHeroSrc}
                             openCardScreen={this.props.openCardScreen}
                             points={this.props.points}
                         />

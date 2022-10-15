@@ -4,7 +4,7 @@ import { Button } from 'react-bootstrap';
 function HeroPanel(props) {
     return  <div className="row">
                 <div className={`${'col-6'} ${style.heroPanel}`} style={{ backgroundColor: props.backColor }}>
-                    <img src={props.heroImg.src} />
+                    <img src={props.heroImg.default.src} />
                 </div>
                 <div className="col-6 text-center">
                     <div>{props.points}</div>
