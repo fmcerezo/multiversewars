@@ -6,7 +6,6 @@ import React from 'react';
 export default class GiftController {
     constructor(game) {
         this.game = game;
-        this.given = false;
         this.lastSecondFight = 0;
     }
 
@@ -23,8 +22,6 @@ export default class GiftController {
             result.collected = true;
             result.data.gifts.splice(gift.id, 1);
             result.data.points = this.game.state.points + gift.points;
-
-            this.given = result.data.gifts.length > 0;
         }
 
         return result;
@@ -40,7 +37,6 @@ export default class GiftController {
         if (!this.isGiftPending() && this.lastSecondFight + 10 < this.game.state.seconds 
             && !EnemiesValidatorHelper.validate(this.game.state.enemies, this.game.state.points)) {
             this.lastSecondFight = this.game.state.seconds;
-            this.given = true;
 
             const hero = PositionHelper.get(this.game.state, this.game.refScene.current.state.refPlayer.current.state);
             const random = PositionHelper.getCloserRandomAroundReference(
@@ -76,17 +72,15 @@ export default class GiftController {
 
     getState() {
         return {
-            given: this.given,
             lastSecondFight: this.lastSecondFight
         };
     }
 
     isGiftPending() {
-        return this.given;
+        return this.game.state.gifts.length > 0;
     }
 
     restore (state) {
-        this.given = state.given;
         this.lastSecondFight = state.lastSecondFight;
     }
 
